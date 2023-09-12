@@ -132,7 +132,7 @@ class _HomeState extends State<Home> {
                         DataCell(Text(proveedor.estado.toString())),
                         DataCell(
                           Text(
-                            "\$${proveedor.categoria.toString()}",
+                            proveedor.categoria.toString(),
                           ),
                         ),
                         DataCell(

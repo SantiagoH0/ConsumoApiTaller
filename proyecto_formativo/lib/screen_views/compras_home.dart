@@ -1,11 +1,10 @@
-// ignore_for_file: unused_field, prefer_const_constructors
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:proyecto_formativo/screen_views/compras_edit.dart';
 import 'package:proyecto_formativo/screen_views/home.dart';
-import 'compras_create.dart';
-import 'compras_edit.dart';
-import 'compras_model.dart';
+import 'package:proyecto_formativo/screen_views/compras_model.dart';
+import 'package:proyecto_formativo/screen_views/compras_create.dart';
 
 class HomeCompras extends StatefulWidget {
   const HomeCompras({Key? key}) : super(key: key);
@@ -16,8 +15,6 @@ class HomeCompras extends StatefulWidget {
 
 class _HomeComprasState extends State<HomeCompras> {
   bool _isLoading = true;
-  final TextEditingController _searchController = TextEditingController();
-  List<ComprasVali> filteredCompras = [];
 
   @override
   void initState() {
@@ -25,31 +22,28 @@ class _HomeComprasState extends State<HomeCompras> {
     _getData();
   }
 
+  DataModel? dataFromAPI;
+
   _getData() async {
     try {
       String url =
           "https://proyecto-formativo-2559218-backend.onrender.com/api/compra";
       http.Response res = await http.get(Uri.parse(url));
       if (res.statusCode == 200) {
-        final jsonData = json.decode(res.body);
-        setState(() {
-          dataFromAPI = DataModel.fromJson(jsonData);
-          filteredCompras = dataFromAPI!.compras;
-          _isLoading = false;
-        });
+        dataFromAPI = DataModel.fromJson(json.decode(res.body));
+        _isLoading = false;
+        setState(() {});
       }
     } catch (e) {
       debugPrint(e.toString());
     }
   }
 
-  DataModel? dataFromAPI;
-
-  void _eliminarCompra(String id) async {
+  void _eliminarProveedor(String id) async {
     try {
       final response = await http.delete(
         Uri.parse(
-            'https://proyecto-formativo-2559218-backend.onrender.com/api/compra/'),
+            'https://proyecto-formativo-2559218-backend.onrender.com/api/compra'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -73,45 +67,91 @@ class _HomeComprasState extends State<HomeCompras> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.orange,
-        title: const Text('Lista de Compras'),
+        title: const Text("Lista de compras"),
       ),
       body: _isLoading
           ? const Center(
               child: CircularProgressIndicator(),
             )
-          : Column(
-              mainAxisAlignment:
-                  MainAxisAlignment.center, // Centra verticalmente
-              children: [
-                SingleChildScrollView(
+          : Center(
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
                   child: DataTable(
-                    headingTextStyle: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                    ),
                     columns: const [
-                      DataColumn(label: Text('Número de Compra')),
-                      DataColumn(label: Text('Producto')),
-                      DataColumn(label: Text('Proveedor')),
-                      DataColumn(label: Text('Cantidad')),
-                      DataColumn(label: Text('Precio')),
-                      DataColumn(label: Text('IVA')),
-                      DataColumn(label: Text('Monto de IVA')),
-                      DataColumn(label: Text('Subtotal')),
-                      DataColumn(label: Text('Total')),
-                      DataColumn(label: Text('Acciones')),
+                      DataColumn(
+                        label: Text(
+                          'Número Compra',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      DataColumn(
+                        label: Text(
+                          'Producto',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      DataColumn(
+                        label: Text(
+                          'Proveedor',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      DataColumn(
+                        label: Text(
+                          'Cantidad',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      DataColumn(
+                        label: Text(
+                          'Precio',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      DataColumn(
+                        label: Text(
+                          'Iva',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      DataColumn(
+                        label: Text(
+                          'Monto Iva',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      DataColumn(
+                        label: Text(
+                          'Subtotal',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      DataColumn(
+                        label: Text(
+                          'Total',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      DataColumn(
+                        label: Text(
+                          'Acciones',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
                     ],
-                    rows: filteredCompras.map((compras) {
+                    rows: dataFromAPI?.compras.map((compra) {
                       return DataRow(cells: [
-                        DataCell(Text(compras.numeroCompra.toString())),
-                        DataCell(Text(compras.producto)),
-                        DataCell(Text(compras.proveedor)),
-                        DataCell(Text(compras.cantidad.toString())),
-                        DataCell(Text(compras.precio.toString())),
-                        DataCell(Text(compras.iva.toString())),
-                        DataCell(Text(compras.montoIva.toString())),
-                        DataCell(Text(compras.subtotal.toString())),
-                        DataCell(Text(compras.total.toString())),
+                        DataCell(Text(compra.numeroCompra.toString())),
+                        DataCell(Text(compra.producto.toString())),
+                        DataCell(Text(compra.proveedor.toString())),
+                        DataCell(Text(compra.cantidad.toString())),
+                        DataCell(Text(compra.precio.toString())),
+                        DataCell(Text(compra.iva.toString())),
+                        DataCell(Text(compra.montoIva.toString())),
+                        DataCell(Text(compra.subtotal.toString())),
+                        DataCell(Text(compra.total.toString())),
                         DataCell(
                           Row(
                             children: [
@@ -120,114 +160,54 @@ class _HomeComprasState extends State<HomeCompras> {
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          ComprasPut(compr: compras),
+                                          ComprasPut(compr: compra),
                                     ),
                                   );
                                 },
-                                icon: Icon(Icons.edit, color: Colors.blue),
+                                icon: const Icon(Icons.edit, color: Colors.blue),
                               ),
-                              SizedBox(width: 8),
+                              const SizedBox(width: 8),
                               IconButton(
-                                onPressed: () async {
-                                  _eliminarCompra(compras.id);
+                                onPressed: () {
+                                  _eliminarProveedor(compra.id);
                                   Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => Menu(),
+                                      builder: (context) => const Menu(),
                                     ),
                                   );
                                 },
-                                icon: Icon(Icons.delete, color: Colors.red),
+                                icon: const Icon(Icons.delete, color: Colors.red),
                               ),
                             ],
                           ),
                         ),
                       ]);
-                    }).toList(),
+                    }).toList() ??
+                        [],
                   ),
                 ),
-                FloatingActionButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => CreateComp(),
-                      ),
-                    );
-                  },
-                  child: Icon(Icons.add),
-                  backgroundColor: Colors.orange,
-                ),
-              ],
+              ),
             ),
-    );
-  }
-}
-
-class _SearchDelegate extends SearchDelegate<String> {
-  final List<ComprasVali> comprasList;
-
-  _SearchDelegate(this.comprasList);
-
-  @override
-  List<Widget> buildActions(BuildContext context) {
-    return [
-      IconButton(
-        icon: Icon(Icons.clear),
-        onPressed: () {
-          query = '';
-        },
+      bottomNavigationBar: const BottomAppBar(
+        shape: CircularNotchedRectangle(),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[],
+        ),
       ),
-    ];
-  }
-
-  @override
-  Widget buildLeading(BuildContext context) {
-    return IconButton(
-      icon: Icon(Icons.arrow_back),
-      onPressed: () {
-        close(context, '');
-      },
-    );
-  }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    final results = comprasList
-        .where((compra) =>
-            compra.producto.toLowerCase().contains(query.toLowerCase()) ||
-            compra.proveedor.toLowerCase().contains(query.toLowerCase()))
-        .toList();
-
-    return ListView.builder(
-      itemCount: results.length,
-      itemBuilder: (context, index) {
-        final compra = results[index];
-        return ListTile(
-          title: Text(compra.producto),
-        );
-      },
-    );
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    final suggestions = comprasList
-        .where((compra) =>
-            compra.producto.toLowerCase().contains(query.toLowerCase()) ||
-            compra.proveedor.toLowerCase().contains(query.toLowerCase()))
-        .toList();
-
-    return ListView.builder(
-      itemCount: suggestions.length,
-      itemBuilder: (context, index) {
-        final compra = suggestions[index];
-        return ListTile(
-          title: Text(compra.producto),
-          onTap: () {
-            close(context, compra.producto);
-          },
-        );
-      },
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const CreateComp(),
+            ),
+          );
+        },
+        backgroundColor: Colors.orange,
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
