@@ -124,49 +124,50 @@ class _HomeState extends State<Home> {
                       ),
                     ],
                     rows: dataFromAPI?.proveedors.map((proveedor) {
-                      return DataRow(cells: [
-                        DataCell(Text(proveedor.nombre.toString())),
-                        DataCell(Text(proveedor.nit.toString())),
-                        DataCell(Text(proveedor.email.toString())),
-                        DataCell(Text(proveedor.telefono.toString())),
-                        DataCell(Text(proveedor.estado.toString())),
-                        DataCell(
-                          Text(
-                            proveedor.categoria.toString(),
-                          ),
-                        ),
-                        DataCell(
-                          Row(
-                            children: [
-                              IconButton(
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          ProveedorPut(provee: proveedor),
-                                    ),
-                                  );
-                                },
-                                icon: const Icon(Icons.edit, color: Colors.blue),
+                          return DataRow(cells: [
+                            DataCell(Text(proveedor.nombre.toString())),
+                            DataCell(Text(proveedor.nit.toString())),
+                            DataCell(Text(proveedor.email.toString())),
+                            DataCell(Text(proveedor.telefono.toString())),
+                            DataCell(Text(proveedor.estado.toString())),
+                            DataCell(
+                              Text(
+                                proveedor.categoria.toString(),
                               ),
-                              const SizedBox(width: 8),
-                              IconButton(
-                                onPressed: () {
-                                  _eliminarProveedor(proveedor.id);
-                                    Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>const Menu(),
-                                    )
-                                  );
-                                },
-                                icon: const Icon(Icons.delete, color: Colors.red),
+                            ),
+                            DataCell(
+                              Row(
+                                children: [
+                                  IconButton(
+                                    onPressed: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              ProveedorPut(provee: proveedor),
+                                        ),
+                                      );
+                                    },
+                                    icon: const Icon(Icons.edit,
+                                        color: Colors.blue),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  IconButton(
+                                    onPressed: () {
+                                      _eliminarProveedor(proveedor.id);
+                                      Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => const Menu(),
+                                          ));
+                                    },
+                                    icon: const Icon(Icons.delete,
+                                        color: Colors.red),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        ),
-                      ]);
-                    }).toList() ??
+                            ),
+                          ]);
+                        }).toList() ??
                         [],
                   ),
                 ),

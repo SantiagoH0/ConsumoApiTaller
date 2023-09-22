@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:proyecto_formativo/screen_views/picture.dart';
 import 'package:proyecto_formativo/screen_views/proveedores_home.dart';
 import 'compras_home.dart';
 
@@ -17,7 +18,7 @@ class Menu extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       home: DefaultTabController(
-        length: 2,
+        length: 3,
         child: Scaffold(
           appBar: AppBar(
             backgroundColor: Colors.orange,
@@ -25,6 +26,7 @@ class Menu extends StatelessWidget {
               tabs: [
                 Tab(text: 'Compras'),
                 Tab(text: 'Proveedores'),
+                Tab(text: 'Camara')
               ],
             ),
             title: const Text('VALICOR'),
@@ -36,6 +38,7 @@ class Menu extends StatelessWidget {
                   children: [
                     HomeCompras(),
                     Home(),
+                    TakePhoto()
                   ],
                 ),
               ),

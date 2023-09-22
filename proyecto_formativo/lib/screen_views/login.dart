@@ -1,111 +1,156 @@
 import 'package:flutter/material.dart';
+import 'package:proyecto_formativo/screen_views/home.dart';
+import 'package:proyecto_formativo/screen_views/login_model.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Iniciar sesión'),
-        backgroundColor: Colors.orange, 
-      ),
-      body: Center(
-        child: Column(
-          children: <Widget>[
-            const SizedBox(height: 20.0), 
-            Image.network(
-              'https://static.vecteezy.com/system/resources/thumbnails/007/407/996/small/user-icon-person-icon-client-symbol-login-head-sign-icon-design-vector.jpg', 
-              width: 200, 
-              height: 200, 
-              fit: BoxFit.contain,
-            ),
-            const SizedBox(height: 20.0), 
-            const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: LoginForm(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class LoginForm extends StatefulWidget {
-  const LoginForm({Key? key}) : super(key: key);
+class LogIn extends StatefulWidget {
+  const LogIn({Key? key}) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
-  _LoginFormState createState() => _LoginFormState();
+  State<LogIn> createState() => _LogInState();
 }
 
-class _LoginFormState extends State<LoginForm> {
-  final TextEditingController _usernameController = TextEditingController();
+class _LogInState extends State<LogIn> {
+  bool isLoading = false;
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  // ignore: unused_field
-  bool _isAuthenticated = false;
+  final _formKey = GlobalKey<FormState>();
 
-  void _authenticate() {
-    String username = _usernameController.text;
-    String password = _passwordController.text;
+  final String validEmail = 'jaua@sa.com';
+  final String validPassword = 'sasa';
 
-    if (username == 'user1' && password == '123') {
-      setState(() {
-        _isAuthenticated = true;
-      });
-      Navigator.pushReplacementNamed(context, '/home');
-    } else {
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('Error de autenticación'),
-            content: const Text('Usuario o contraseña incorrectos.'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text('Aceptar'),
-              ),
-            ],
-          );
-        },
+  @override
+  void initState() {
+    super.initState();
+    _getUsuarios();
+  }
+
+  DataModelUsuario? _dataModelUsuario;
+
+  _getUsuarios() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      String url = 'https://coff-v-art-api.onrender.com/api/user';
+      http.Response res = await http.get(Uri.parse(url));
+
+      if (res.statusCode == 200) {
+        _dataModelUsuario = DataModelUsuario.fromJson(json.decode(res.body));
+      } else {
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error en la solicitud: ${res.statusCode}'),
+          ),
+        );
+      }
+    } catch (e) {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error al cargar los usuarios: $e'),
+        ),
       );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        TextFormField(
-          controller: _usernameController,
-          decoration: const InputDecoration(
-            labelText: 'Usuario',
-            icon: Icon(Icons.person), // Icono para el campo de usuario
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Login'),
+        centerTitle: true,
+        backgroundColor: Colors.orange,
+      ),
+      body: Container(
+        color: const Color.fromARGB(192, 244, 245, 245),
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Image.network(
+                'https://th.bing.com/th/id/OIP.1NnSdHyJzQknI_uULOkoxgAAAA?pid=ImgDet&rs=1',
+                width: 200,
+                height: 200,
+              ),
+              const SizedBox(height: 16.0),
+              TextFormField(
+                controller: _emailController,
+                decoration: const InputDecoration(
+                  labelText: 'Usuario',
+                  icon: Icon(Icons.person),
+                ),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Por favor, ingresa tu usuario';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(
+                height: 30,
+              ),
+              TextFormField(
+                controller: _passwordController,
+                decoration: const InputDecoration(
+                  labelText: 'Contraseña',
+                  icon: Icon(Icons.lock),
+                ),
+                obscureText: true,
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Por favor, ingresa tu contraseña';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16.0),
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    final enteredEmail = _emailController.text.trim();
+                    final enteredPassword = _passwordController.text.trim();
+                    int positionUsuario = -1;
+
+                    for (int i = 0;
+                        i < _dataModelUsuario!.usuarios.length;
+                        i++) {
+                      if (_dataModelUsuario!.usuarios[i].email ==
+                              enteredEmail &&
+                          _dataModelUsuario!.usuarios[i].password ==
+                              enteredPassword) {
+                        positionUsuario = i;
+                        break;
+                      }
+                    }
+
+                    if (positionUsuario != -1) {
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (context) => const Menu(),
+                      ));
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text('Correo o contraseña errados')),
+                      );
+                    }
+                  }
+                },
+                child: const Text('Ingresar'),
+              ),
+            ],
           ),
         ),
-        TextFormField(
-          controller: _passwordController,
-          decoration: const InputDecoration(
-            labelText: 'Contraseña',
-            icon: Icon(Icons.lock), // Icono para el campo de contraseña
-          ),
-          obscureText: true,
-        ),
-        const SizedBox(height: 16.0),
-        ElevatedButton(
-          onPressed: _authenticate,
-          style: ElevatedButton.styleFrom(
-            backgroundColor:
-                Colors.orange, // Cambia el color del botón a naranja
-          ),
-          child: const Text('Iniciar sesión'),
-        ),
-      ],
+      ),
     );
   }
 }

@@ -142,48 +142,50 @@ class _HomeComprasState extends State<HomeCompras> {
                       ),
                     ],
                     rows: dataFromAPI?.compras.map((compra) {
-                      return DataRow(cells: [
-                        DataCell(Text(compra.numeroCompra.toString())),
-                        DataCell(Text(compra.producto.toString())),
-                        DataCell(Text(compra.proveedor.toString())),
-                        DataCell(Text(compra.cantidad.toString())),
-                        DataCell(Text(compra.precio.toString())),
-                        DataCell(Text(compra.iva.toString())),
-                        DataCell(Text(compra.montoIva.toString())),
-                        DataCell(Text(compra.subtotal.toString())),
-                        DataCell(Text(compra.total.toString())),
-                        DataCell(
-                          Row(
-                            children: [
-                              IconButton(
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          ComprasPut(compr: compra),
-                                    ),
-                                  );
-                                },
-                                icon: const Icon(Icons.edit, color: Colors.blue),
+                          return DataRow(cells: [
+                            DataCell(Text(compra.numeroCompra.toString())),
+                            DataCell(Text(compra.producto.toString())),
+                            DataCell(Text(compra.proveedor.toString())),
+                            DataCell(Text(compra.cantidad.toString())),
+                            DataCell(Text(compra.precio.toString())),
+                            DataCell(Text(compra.iva.toString())),
+                            DataCell(Text(compra.montoIva.toString())),
+                            DataCell(Text(compra.subtotal.toString())),
+                            DataCell(Text(compra.total.toString())),
+                            DataCell(
+                              Row(
+                                children: [
+                                  IconButton(
+                                    onPressed: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              ComprasPut(compr: compra),
+                                        ),
+                                      );
+                                    },
+                                    icon: const Icon(Icons.edit,
+                                        color: Colors.blue),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  IconButton(
+                                    onPressed: () {
+                                      _eliminarProveedor(compra.id);
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => const Menu(),
+                                        ),
+                                      );
+                                    },
+                                    icon: const Icon(Icons.delete,
+                                        color: Colors.red),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(width: 8),
-                              IconButton(
-                                onPressed: () {
-                                  _eliminarProveedor(compra.id);
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const Menu(),
-                                    ),
-                                  );
-                                },
-                                icon: const Icon(Icons.delete, color: Colors.red),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ]);
-                    }).toList() ??
+                            ),
+                          ]);
+                        }).toList() ??
                         [],
                   ),
                 ),
